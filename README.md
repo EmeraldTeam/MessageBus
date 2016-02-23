@@ -5,18 +5,18 @@ https://www.nuget.org/packages/EmeraldTeam.MessageBus/1.0.0
 
 Passing messages is implemented via next two methods:
 
-#public static void Send<T>(object key, T arguments)
+<b>public static void Send<T>(object key, T arguments)</b>
 
-#public static void Send(object key)
+<b>public static void Send(object key)</b>
 
 And handling them is implemented via next two methods:
 
-#public static void Subscribe<T>(this object subscriber, object key, Action<T> listenerAction)
+<b>public static void Subscribe<T>(this object subscriber, object key, Action<T> listenerAction)</b>
 
-#public static void Subscribe(this object subscriber, object key, Action listenerAction)
+<b>public static void Subscribe(this object subscriber, object key, Action listenerAction)</b>
 
 So you could write something like
 
-object1.Subscribe<string>("ChatChannel", chatMessage => Console.WriteLine(chatMessage));
+<b>object1.Subscribe<string>("ChatChannel", chatMessage => Console.WriteLine(chatMessage));</b>
 
-object2.Send("ChatChannel", "Hello!");
+<b>object2.Send("ChatChannel", "Hello!");</b>
