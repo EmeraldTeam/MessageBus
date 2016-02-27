@@ -1,7 +1,7 @@
 # MessageBus
 Message bus to pass messages between objects without coupling them.
 
-[![NuGet Status](http://img.shields.io/nuget/v/gitter-api-pcl.svg?style=flat)](https://www.nuget.org/packages/EmeraldTeam.MessageBus/1.0.0)
+[![NuGet Status](http://img.shields.io/nuget/v/gitter-api-pcl.svg?style=flat)](https://www.nuget.org/packages/EmeraldTeam.MessageBus)
 
 Passing messages is implemented via next two methods:
 
