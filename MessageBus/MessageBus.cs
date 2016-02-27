@@ -23,9 +23,12 @@ namespace EmeraldTeam.MessageBus
 		public static void Send<T>(object key, T arguments)
 		{
 			var fullKey = new ChannelKey(key, typeof(T));
-			if (!Listeners.ContainsKey(fullKey))
+			object value;
+			if (!Listeners.TryGetValue(fullKey, out value))
+			{
 				return;
-			var actionList = (List<MessageReaction<T>>)Listeners[fullKey];
+			}
+			var actionList = (List<MessageReaction<T>>)value;
 			foreach (var listener in actionList)
 			{
 				listener.MessageHandler(arguments);
@@ -39,9 +42,12 @@ namespace EmeraldTeam.MessageBus
 		public static void Send(object key)
 		{
 			var fullKey = new ChannelKey(key);
-			if (!Listeners.ContainsKey(fullKey))
+			object value;
+			if (!Listeners.TryGetValue(fullKey, out value))
+			{
 				return;
-			var actionList = (List<MessageReaction>)Listeners[fullKey];
+			}
+			var actionList = (List<MessageReaction>)value;
 			foreach (var listener in actionList)
 			{
 				listener.MessageHandler();
@@ -57,14 +63,18 @@ namespace EmeraldTeam.MessageBus
 		public static void Subscribe<T>(this object subscriber, object key, Action<T> listenerAction)
 		{
 			var fullKey = new ChannelKey(key, typeof(T));
-			if (!Listeners.ContainsKey(fullKey))
-				Listeners[fullKey] = new List<MessageReaction<T>>();
-
-			var list = (List<MessageReaction<T>>)Listeners[fullKey];
-			if (list.Any(reaction => reaction.Subscriber.Equals(subscriber)))
+			object value;
+			if (!Listeners.TryGetValue(fullKey, out value))
+			{
+				Listeners.Add(fullKey, value = new List<MessageReaction<T>>());
+			}
+			var actionList = (List<MessageReaction<T>>)value;
+			if (actionList.Any(reaction => reaction.Subscriber.Equals(subscriber)))
+			{
 				return;
+			}
 
-			list.Add(new MessageReaction<T>(subscriber, listenerAction));
+			actionList.Add(new MessageReaction<T>(subscriber, listenerAction));
 		}
 
 		/// <summary>
@@ -76,14 +86,18 @@ namespace EmeraldTeam.MessageBus
 		public static void Subscribe(this object subscriber, object key, Action listenerAction)
 		{
 			var fullKey = new ChannelKey(key);
-			if (!Listeners.ContainsKey(fullKey))
-				Listeners[fullKey] = new List<MessageReaction>();
-
-			var list = (List<MessageReaction>)Listeners[fullKey];
-			if (list.Any(reaction => reaction.Subscriber.Equals(subscriber)))
+			object value;
+			if (!Listeners.TryGetValue(fullKey, out value))
+			{
+				Listeners.Add(fullKey, value = new List<MessageReaction>());
+			}
+			var actionList = (List<MessageReaction>)value;
+			if (actionList.Any(reaction => reaction.Subscriber.Equals(subscriber)))
+			{
 				return;
+			}
 
-			list.Add(new MessageReaction(subscriber, listenerAction));
+			actionList.Add(new MessageReaction(subscriber, listenerAction));
 		}
 
 		/// <summary>
@@ -94,10 +108,13 @@ namespace EmeraldTeam.MessageBus
 		public static void UnSubscribe<T>(this object subscriber, object key)
 		{
 			var fullKey = new ChannelKey(key, typeof(T));
-			if (!Listeners.ContainsKey(fullKey))
+			object value;
+			if (!Listeners.TryGetValue(fullKey, out value))
+			{
 				return;
+			}
 
-			((List<MessageReaction<T>>)Listeners[fullKey]).RemoveAll(listener => listener.Subscriber.Equals(subscriber));
+			((List<MessageReaction<T>>)value).RemoveAll(listener => listener.Subscriber.Equals(subscriber));
 		}
 
 		/// <summary>
@@ -108,10 +125,13 @@ namespace EmeraldTeam.MessageBus
 		public static void UnSubscribe(this object subscriber, object key)
 		{
 			var fullKey = new ChannelKey(key);
-			if (!Listeners.ContainsKey(fullKey))
+			object value;
+			if (!Listeners.TryGetValue(fullKey, out value))
+			{
 				return;
+			}
 
-			((List<MessageReaction>)Listeners[fullKey]).RemoveAll(listener => listener.Subscriber.Equals(subscriber));
+			((List<MessageReaction>)value).RemoveAll(listener => listener.Subscriber.Equals(subscriber));
 		}
 
 		/// <summary>
